@@ -6,6 +6,7 @@ contract DappPoll {
     struct Poll {
         address owner;
         string title;
+        string description;
         string[] options;
         mapping(uint => uint) votesPerOption;
         uint totalVotes;
@@ -39,13 +40,14 @@ contract DappPoll {
         _authorizedsScreenwriters[_screenwriter] = false;
     }
 
-    function createPoll(string memory _title, string[] memory _options) public onlyScreenwriter {
+    function createPoll(string memory _title, string memory _description, string[] memory _options) public onlyScreenwriter {
         require(_options.length > 1, "There must be at least two options");
 
         uint _pollID = _generatePollID();
 
         _polls[_pollID].owner = msg.sender;
         _polls[_pollID].title = _title;
+        _polls[_pollID].description = _description;
         _polls[_pollID].options = _options;
 
         pollIDs.push(_pollID);
@@ -54,6 +56,7 @@ contract DappPoll {
         for (uint i = 0; i < _options.length; i++) {
             _polls[_pollID].votesPerOption[i] = 0;
         }
+
     }
 
     function votePoll(uint _id, uint _option) public {
@@ -61,7 +64,7 @@ contract DappPoll {
         _polls[_id].totalVotes++;
     } 
 
-    function getPoll(uint _id) public view returns (address, string memory, string[] memory, uint[] memory, uint) {
+    function getPoll(uint _id) public view returns (address, string memory, string memory, string[] memory, uint[] memory, uint) {
         uint qtdOptions = _polls[_id].options.length;
         
         uint[] memory votesPerOption = new uint[](qtdOptions);
@@ -70,7 +73,7 @@ contract DappPoll {
             votesPerOption[i] = _polls[_id].votesPerOption[i];
         }
 
-        return (_polls[_id].owner, _polls[_id].title, _polls[_id].options, votesPerOption, _polls[_id].totalVotes);
+        return (_polls[_id].owner, _polls[_id].title, _polls[_id].description, _polls[_id].options, votesPerOption, _polls[_id].totalVotes);
     }
 
     function _generatePollID() private view returns (uint) {
