@@ -17,6 +17,9 @@ contract DappPoll {
     mapping (uint => Poll) private _polls; // As enquetes serão acessadas a partir do seu id, que é gerado aleatoriamente
     mapping (address => bool) private _authorizedsScreenwriters;
 
+    event CreatePoll(address ownerPoll, string title, string description, string[] options, uint id);
+    event VotePoll(address voter, uint option, uint totalVotes);
+
     constructor() {
         owner = msg.sender;
         addScreenwriter(owner);
@@ -57,11 +60,14 @@ contract DappPoll {
             _polls[_pollID].votesPerOption[i] = 0;
         }
 
+        emit CreatePoll(msg.sender, _title, _description, _options, _pollID);
     }
 
     function votePoll(uint _id, uint _option) public {
         _polls[_id].votesPerOption[_option]++;
         _polls[_id].totalVotes++;
+
+        emit VotePoll(msg.sender, _option, _polls[_id].totalVotes);
     } 
 
     function getPoll(uint _id) public view returns (address, string memory, string memory, string[] memory, uint[] memory, uint) {
