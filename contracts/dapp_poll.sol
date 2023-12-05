@@ -71,11 +71,11 @@ contract DappPoll {
     } 
 
     function getPoll(uint _id) public view returns (address, string memory, string memory, string[] memory, uint[] memory, uint) {
-        uint qtdOptions = _polls[_id].options.length;
+        uint amountOptions = _polls[_id].options.length;
         
-        uint[] memory votesPerOption = new uint[](qtdOptions);
+        uint[] memory votesPerOption = new uint[](amountOptions);
         
-        for (uint i = 0; i < qtdOptions; i++) {
+        for (uint i = 0; i < amountOptions; i++) {
             votesPerOption[i] = _polls[_id].votesPerOption[i];
         }
 
