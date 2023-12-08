@@ -1,0 +1,37 @@
+<div class="flex justify-center items-center h-screen text-2xl">
+  <div class="card w-2/4 bg-neutral text-neutral-content px-3">
+    <div class="card-body">
+      <div class="flex justify-center items-center p-3">
+        <h2 class="card-title text-3xl">{{ poll.title }}</h2>
+      </div>
+      <p>Description: {{ poll.description }}</p>
+      <p>
+        Time remaining:<span class="pl-2">{{ poll.timeLeft }}</span>
+      </p>
+      <form>
+        <div
+          class="form-control flex-col gap-4"
+          *ngFor="let option of poll.options; let i = index"
+        >
+          <label class="label cursor-pointer justify-start">
+            <input
+              type="radio"
+              name="option"
+              class="radio radio-primary"
+              [value]="i"
+            />
+            <span class="text px-4">{{ option }}</span>
+          </label>
+          <progress
+            class="progress progress-primary w-full justify-self-end"
+            value="30"
+            max="100"
+          ></progress>
+        </div>
+        <div class="form-control pt-8">
+          <input type="submit" value="Send" class="btn btn-primary" />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
