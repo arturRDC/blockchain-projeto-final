@@ -10,7 +10,9 @@ import { CommonModule } from '@angular/common';
   imports: [FormsModule, CommonModule],
 })
 export class PollComponent implements OnInit {
-  poll: any = { options: [] };
+  poll: any;
+  selectedOption: number | null = null;
+  voteAmount: number = 1;
 
   ngOnInit() {
     this.poll = {
@@ -18,6 +20,7 @@ export class PollComponent implements OnInit {
       description: "I'm feeling spicy today...",
       timeLeft: 36000,
       options: ['John Snow', 'Arya Stark', 'Sansa Stark'],
+      votesPerOption: [25, 35, 20],
     };
   }
 
@@ -32,5 +35,11 @@ export class PollComponent implements OnInit {
     )
       ? true
       : !isNaN(Number(event.key)) && event.code !== 'Space';
+  }
+
+  // TODO
+  handleVote() {
+    console.log('vote amount: ' + this.voteAmount);
+    console.log('selected option ' + this.selectedOption);
   }
 }

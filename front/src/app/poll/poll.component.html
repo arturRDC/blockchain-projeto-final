@@ -45,12 +45,13 @@
               name="option"
               class="radio radio-primary"
               [value]="i"
+              [(ngModel)]="selectedOption"
             />
             <span class="text px-4">{{ option }}</span>
           </label>
           <progress
             class="progress progress-primary w-full justify-self-end"
-            value="30"
+            [value]="poll.votesPerOption[i]"
             max="100"
           ></progress>
         </div>
@@ -77,8 +78,12 @@
         placeholder="Choose amount"
         class="input input-bordered input-primary w-full max-w-xs"
         (keydown)="handleInvalidKeys($event)"
+        [(ngModel)]="voteAmount"
+        name="voteAmount"
       />
-      <button class="btn btn-primary justify-items-end">Confirm</button>
+      <button class="btn btn-primary justify-items-end" (click)="handleVote()">
+        Confirm
+      </button>
     </form>
   </div>
 </dialog>
