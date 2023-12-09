@@ -80,27 +80,15 @@ contract DappPoll {
         emit VotePoll(msg.sender, _option, _polls[_id].totalVotes);
     } 
 
-    function getPoll(uint _id) public view returns (address, string memory, string memory, string[] memory, uint, uint) {
+    function getPoll(uint _id) public view returns (string memory title, string memory description, string[] memory options, uint totalVotes,uint[] memory votesPerOption, uint _closingTime) {
         uint amountOptions = _polls[_id].options.length;
-        
-        uint[] memory votesPerOption = new uint[](amountOptions);
-        
-        for (uint i = 0; i < amountOptions; i++) {
-            votesPerOption[i] = _polls[_id].votesPerOption[i];
-        }
-
-        return (_polls[_id].owner, _polls[_id].title, _polls[_id].description, _polls[_id].options, _polls[_id].totalVotes, _polls[_id].closingTime);
-    }
-
-    // Get votes per option separately to prevent stack limit
-    function getVotesPerOption(uint _id) public view returns (uint[] memory) {
-        uint amountOptions = _polls[_id].options.length;
-        uint[] memory votesPerOption = new uint[](amountOptions);
+        uint[] memory _votesPerOption = new uint[](amountOptions);
 
         for (uint i = 0; i < amountOptions; i++) {
-            votesPerOption[i] = _polls[_id].votesPerOption[i];
+            _votesPerOption[i] = _polls[_id].votesPerOption[i];
         }
-        return votesPerOption;
+
+        return (_polls[_id].title, _polls[_id].description, _polls[_id].options, _polls[_id].totalVotes,_votesPerOption, _polls[_id].closingTime);
     }
 
     function _generatePollID() private view returns (uint) {
