@@ -20,4 +20,17 @@ export class PollComponent implements OnInit {
       options: ['John Snow', 'Arya Stark', 'Sansa Stark'],
     };
   }
+
+  openModal() {
+    const modal = document.querySelector('#voteConfModal') as HTMLDialogElement;
+    modal.showModal();
+  }
+
+  handleInvalidKeys(event: KeyboardEvent) {
+    return ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(
+      event.code
+    )
+      ? true
+      : !isNaN(Number(event.key)) && event.code !== 'Space';
+  }
 }
