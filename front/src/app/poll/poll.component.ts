@@ -14,7 +14,7 @@ export class PollComponent implements OnInit {
   poll: any;
   selectedOption: number | null = null;
   voteAmount: number = 1;
-  closingTime: number = 1702266000;
+  closingTime: number = 1702267000;
 
   ngOnInit() {
     this.poll = {
