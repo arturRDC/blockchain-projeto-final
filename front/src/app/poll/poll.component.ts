@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CountdownComponent } from '../countdown/countdown.component';
 
 @Component({
   selector: 'app-poll',
   templateUrl: './poll.component.html',
   styleUrl: './poll.component.css',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, CountdownComponent],
 })
 export class PollComponent implements OnInit {
   poll: any;
   selectedOption: number | null = null;
   voteAmount: number = 1;
+  closingTime: number = 1702266000;
 
   ngOnInit() {
     this.poll = {

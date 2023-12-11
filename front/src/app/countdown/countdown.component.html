@@ -1,0 +1,27 @@
+<div *ngIf="!pollEnded" class="flex gap-5">
+  <div>
+    <span class="countdown font-mono text-4xl">
+      <span [style.--value]="days"></span>
+    </span>
+    days
+  </div>
+  <div>
+    <span class="countdown font-mono text-4xl">
+      <span [style.--value]="hours"></span>
+    </span>
+    hours
+  </div>
+  <div>
+    <span class="countdown font-mono text-4xl">
+      <span [style.--value]="minutes"></span>
+    </span>
+    min
+  </div>
+  <div>
+    <span class="countdown font-mono text-4xl">
+      <span [style.--value]="seconds"></span>
+    </span>
+    sec
+  </div>
+</div>
+<p *ngIf="pollEnded" class="text-primary">Poll ended</p>
