@@ -1,4 +1,7 @@
-<div class="flex justify-center items-center h-screen text-2xl pollBody">
+<div
+  *ngIf="poll"
+  class="flex justify-center items-center h-screen text-2xl pollBody"
+>
   <div class="card w-2/4 bg-neutral text-neutral-content px-3">
     <div class="card-body">
       <div class="flex justify-center items-center p-3">
@@ -7,7 +10,7 @@
       <p>Description: {{ poll.description }}</p>
       <div class="flex justify-around">
         <p>Time remaining:</p>
-        <app-countdown [closingTime]="closingTime"></app-countdown>
+        <app-countdown [poll]="poll"></app-countdown>
       </div>
       <form>
         <div
@@ -26,7 +29,7 @@
           </label>
           <progress
             class="progress progress-primary w-full justify-self-end"
-            [value]="poll.votesPerOption[i]"
+            [value]="poll.votesPercent[i]"
             max="100"
           ></progress>
         </div>
