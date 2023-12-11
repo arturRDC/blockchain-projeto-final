@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
+import "./token/vote_verse_token.sol"; // Ajuste o caminho conforme necessário
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 contract DappPoll {
-    // Estrutura básica de uma enquete 
     struct Poll {
         address owner;
         string title;
@@ -15,15 +17,17 @@ contract DappPoll {
 
     address public owner;
     uint[] public pollIDs;
-    mapping (uint => Poll) private _polls; // As enquetes serão acessadas a partir do seu id, que é gerado aleatoriamente
+    mapping (uint => Poll) private _polls;
     mapping (address => bool) private _authorizedsScreenwriters;
+    address public voteVerseToken;
 
     event CreatePoll(address ownerPoll, string title, string description, string[] options, uint id, uint closingTime);
     event VotePoll(address voter, uint option, uint totalVotes);
 
-    constructor() {
+    constructor(address _voteVerseToken) {
         owner = msg.sender;
         addScreenwriter(owner);
+        voteVerseToken = _voteVerseToken;
     }
 
     modifier onlyOwner() {
@@ -56,7 +60,6 @@ contract DappPoll {
         uint _pollID = _generatePollID();
         uint _closingTime = block.timestamp + _duration;
 
-
         _polls[_pollID].owner = msg.sender;
         _polls[_pollID].title = _title;
         _polls[_pollID].description = _description;
@@ -65,7 +68,6 @@ contract DappPoll {
 
         pollIDs.push(_pollID);
 
-        // Inicializando a chave do mapping votesPerOption 
         for (uint i = 0; i < _options.length; i++) {
             _polls[_pollID].votesPerOption[i] = 0;
         }
@@ -73,12 +75,15 @@ contract DappPoll {
         emit CreatePoll(msg.sender, _title, _description, _options, _pollID, _closingTime);
     }
 
-    function votePoll(uint _id, uint _option) public pollOpen(_id) {
-        _polls[_id].votesPerOption[_option]++;
-        _polls[_id].totalVotes++;
+    function votePoll(uint _id, uint _option, uint _tokenAmount) public pollOpen(_id) {
+        require(_tokenAmount > 0, "Token amount must be greater than 0");
+        require(IERC20(voteVerseToken).transferFrom(msg.sender, address(this), _tokenAmount), "Token transfer failed");
+
+        _polls[_id].votesPerOption[_option] += _tokenAmount;
+        _polls[_id].totalVotes += _tokenAmount;
 
         emit VotePoll(msg.sender, _option, _polls[_id].totalVotes);
-    } 
+    }
 
     function getPoll(uint _id) public view returns (string memory title, string memory description, string[] memory options, uint totalVotes,uint[] memory votesPerOption, uint _closingTime) {
         uint amountOptions = _polls[_id].options.length;
@@ -88,7 +93,7 @@ contract DappPoll {
             _votesPerOption[i] = _polls[_id].votesPerOption[i];
         }
 
-        return (_polls[_id].title, _polls[_id].description, _polls[_id].options, _polls[_id].totalVotes,_votesPerOption, _polls[_id].closingTime);
+        return (_polls[_id].title, _polls[_id].description, _polls[_id].options, _polls[_id].totalVotes, _votesPerOption, _polls[_id].closingTime);
     }
 
     function _generatePollID() private view returns (uint) {
