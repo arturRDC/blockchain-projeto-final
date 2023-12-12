@@ -13,6 +13,7 @@ contract DappPoll {
         mapping(uint => uint) votesPerOption;
         uint totalVotes;
         uint closingTime;
+        bool open;
     }
 
     address public owner;
@@ -38,14 +39,21 @@ contract DappPoll {
     }
 
     modifier onlyScreenwriter() {
-        require(_authorizedsScreenwriters[msg.sender], "Not authorized to create polls.");
+        require(_authorizedsScreenwriters[msg.sender], "Not authorized to manage polls.");
         _;
     }
 
     modifier pollOpen(uint _id) {
-        require(block.timestamp < _polls[_id].closingTime, "Poll is closed.");
+        require(_polls[_id].open, "Poll is closed.");
+
+        if (block.timestamp >= _polls[_id].closingTime) {
+            _polls[_id].open = false;
+            revert("Poll is closed.");
+        }
+
         _;
     }
+
 
     function addScreenwriter(address _screenwriter) public onlyOwner {
         _authorizedsScreenwriters[_screenwriter] = true;
@@ -67,6 +75,7 @@ contract DappPoll {
         _polls[_pollID].description = _description;
         _polls[_pollID].options = _options;
         _polls[_pollID].closingTime = _closingTime;
+        _polls[_pollID].open = true;
 
         pollIDs.push(_pollID);
 
@@ -87,15 +96,30 @@ contract DappPoll {
         emit VotePoll(msg.sender, _option, _polls[_id].totalVotes);
     }
 
-    function getPoll(uint _id) public view returns (string memory title, string memory description, string[] memory options, uint totalVotes,uint[] memory votesPerOption, uint _closingTime) {
-        uint amountOptions = _polls[_id].options.length;
+    function getPoll(uint _id) public view returns (string memory title, string memory description, string[] memory options, uint totalVotes,uint[] memory votesPerOption, uint _closingTime, bool open) {
+        Poll storage poll = _polls[_id];
+        uint amountOptions = poll.options.length;
         uint[] memory _votesPerOption = new uint[](amountOptions);
 
         for (uint i = 0; i < amountOptions; i++) {
-            _votesPerOption[i] = _polls[_id].votesPerOption[i];
+            _votesPerOption[i] = poll.votesPerOption[i];
         }
 
-        return (_polls[_id].title, _polls[_id].description, _polls[_id].options, _polls[_id].totalVotes, _votesPerOption, _polls[_id].closingTime);
+        return (
+            poll.title,
+            poll.description,
+            poll.options,
+            poll.totalVotes,
+            _votesPerOption,
+            poll.closingTime,
+            poll.open
+        );
+    }
+
+    function closePoll(uint _id) public onlyScreenwriter {
+        require(msg.sender == _polls[_id].owner, "Not owner of poll");
+
+        _polls[_id].open = false;
     }
 
     function setMinimumDuration(uint _time) public onlyOwner {
