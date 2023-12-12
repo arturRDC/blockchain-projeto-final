@@ -19,6 +19,7 @@ contract DappPoll {
     address public owner;
     address public voteVerseToken;
     uint public minimumDuration;
+    uint public _amountTokenToRedeem;
     uint[] public pollIDs;
     mapping (uint => Poll) private _polls;
     mapping (address => bool) private _authorizedsScreenwriters;
@@ -45,15 +46,10 @@ contract DappPoll {
 
     modifier pollOpen(uint _id) {
         require(_polls[_id].open, "Poll is closed.");
-
-        if (block.timestamp >= _polls[_id].closingTime) {
-            _polls[_id].open = false;
-            revert("Poll is closed.");
-        }
+        require(block.timestamp < _polls[_id].closingTime, "Poll is closed");
 
         _;
     }
-
 
     function addScreenwriter(address _screenwriter) public onlyOwner {
         _authorizedsScreenwriters[_screenwriter] = true;
@@ -89,9 +85,11 @@ contract DappPoll {
     function votePoll(uint _id, uint _option, uint _tokenAmount) public pollOpen(_id) {
         require(_tokenAmount > 0, "Token amount must be greater than 0");
         require(IERC20(voteVerseToken).transferFrom(msg.sender, address(this), _tokenAmount), "Token transfer failed");
+        require(_option < _polls[_id].options.length, "Option does not exist");
 
         _polls[_id].votesPerOption[_option] += _tokenAmount;
         _polls[_id].totalVotes += _tokenAmount;
+        _amountTokenToRedeem += ((_tokenAmount * 30) / 100);
 
         emit VotePoll(msg.sender, _option, _polls[_id].totalVotes);
     }
@@ -117,13 +115,34 @@ contract DappPoll {
     }
 
     function closePoll(uint _id) public onlyScreenwriter {
+        require(_polls[_id].open == true);
         require(msg.sender == _polls[_id].owner, "Not owner of poll");
-
+        require(block.timestamp >  _polls[_id].closingTime, "The poll has not yet reached the defined maximum time");
+        
         _polls[_id].open = false;
+        _transferTokenToWriter(_id);
     }
 
     function setMinimumDuration(uint _time) public onlyOwner {
         minimumDuration = _time;
+    }
+
+    function redeemToken() public onlyOwner returns (uint) {
+        uint aux = _amountTokenToRedeem;
+
+        IERC20(voteVerseToken).transfer(owner, _amountTokenToRedeem);
+        _amountTokenToRedeem = 0;
+
+        return aux;
+    }
+
+    function _transferTokenToWriter(uint _id) private {
+        uint amountToTransfer = ((_polls[_id].totalVotes * 70) / 100);
+        
+        if (amountToTransfer > 0) {
+            IERC20(voteVerseToken).transfer(_polls[_id].owner, amountToTransfer);
+        }
+
     }
 
     function _generatePollID() private view returns (uint) {
