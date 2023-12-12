@@ -44,6 +44,17 @@ contract DappPoll {
         _;
     }
 
+    modifier canTransfer(uint _tokenAmount) {
+        uint allowance = IERC20(voteVerseToken).allowance(msg.sender, address(this));
+
+        if (allowance == 0) {
+            revert("This contract is not approved to transfer your tokens");
+        } else if (allowance < _tokenAmount) {
+            revert("You are trying to transfer more tokens than approved for this contract");
+        }
+        _;
+    }
+
     modifier pollOpen(uint _id) {
         require(_polls[_id].open, "Poll is closed.");
         require(block.timestamp < _polls[_id].closingTime, "Poll is closed");
@@ -82,10 +93,10 @@ contract DappPoll {
         emit CreatePoll(msg.sender, _title, _description, _options, _pollID, _closingTime);
     }
 
-    function votePoll(uint _id, uint _option, uint _tokenAmount) public pollOpen(_id) {
+    function votePoll(uint _id, uint _option, uint _tokenAmount) public pollOpen(_id) canTransfer(_tokenAmount) {
+        require(_option < _polls[_id].options.length, "Option does not exist");
         require(_tokenAmount > 0, "Token amount must be greater than 0");
         require(IERC20(voteVerseToken).transferFrom(msg.sender, address(this), _tokenAmount), "Token transfer failed");
-        require(_option < _polls[_id].options.length, "Option does not exist");
 
         _polls[_id].votesPerOption[_option] += _tokenAmount;
         _polls[_id].totalVotes += _tokenAmount;
