@@ -26,7 +26,7 @@ contract DappPoll {
 
     event CreatePoll(address ownerPoll, string title, string description, string[] options, uint id, uint closingTime);
     event VotePoll(address voter, uint option, uint totalVotes);
-    event ClosePoll(address ownerPoll, uint id, uint timesTamp);
+    event ClosePoll(address ownerPoll, uint id, uint timestamp);
 
     constructor(address _voteVerseToken) {
         owner = msg.sender;
