@@ -15,7 +15,7 @@ contract VVEToken is ERC20 {
     constructor() ERC20("VoteVerse", "VVE") {
         _mint(msg.sender, 100000);
         owner = msg.sender;
-        tokenPrice = 0.00001 ether;
+        tokenPrice = 0.0000000001 ether;
     }
 
     function createTokens(uint _amount) public onlyOwner {
