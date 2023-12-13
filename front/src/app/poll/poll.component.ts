@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CountdownComponent } from '../countdown/countdown.component';
+import { PollService } from '../poll.service';
+import { ActivatedRoute } from '@angular/router';
+import { Poll, PollNum } from './poll';
 
 @Component({
   selector: 'app-poll',
@@ -12,18 +15,39 @@ import { CountdownComponent } from '../countdown/countdown.component';
 })
 export class PollComponent implements OnInit {
   poll: any;
+  pollId: string | null = null;
+  votesPercent: number[] | null = null;
+
   selectedOption: number | null = null;
   voteAmount: number = 1;
-  closingTime: number = 1702267000;
 
-  ngOnInit() {
-    this.poll = {
-      title: 'Who is going to die next episode?',
-      description: "I'm feeling spicy today...",
-      timeLeft: 36000,
-      options: ['John Snow', 'Arya Stark', 'Sansa Stark'],
-      votesPerOption: [25, 35, 20],
-    };
+  constructor(
+    private route: ActivatedRoute,
+    private pollService: PollService
+  ) {}
+
+  async ngOnInit() {
+    this.pollId = this.route.snapshot.paramMap.get('id');
+    if (this.pollId) {
+      this.poll = await this.pollService.getPoll(this.pollId as string);
+      console.log(this.poll);
+      if (this.poll.totalVotes === 0) {
+        // Handle the case when there are no votes
+        console.log('test');
+        this.poll.votesPercent = this.poll.votesPerOption.map(() => 0);
+      } else {
+        // this.poll.votesPercent = [0, 0];
+        // this.poll.votesPercent = this.poll.votesPerOption
+        //   .filter((m: number | null): m is number => typeof m === 'number')
+        //   .map((m: number) => m / this.poll.totalVotes);
+        // this.poll.votesPercent = this.poll.votesPerOption.map(
+        //   (m: bigint) => (m * BigInt(100)) / this.poll.totalVotes
+        // );
+      }
+    } else {
+      // Handle the case when pollId is null
+      // Redirect to a 404 page or show a default message
+    }
   }
 
   openModal() {
@@ -39,9 +63,15 @@ export class PollComponent implements OnInit {
       : !isNaN(Number(event.key)) && event.code !== 'Space';
   }
 
-  // TODO
-  handleVote() {
-    console.log('vote amount: ' + this.voteAmount);
-    console.log('selected option ' + this.selectedOption);
+  async handleVote() {
+    if (this.pollId === null) {
+      console.error('pollId is null');
+      return;
+    }
+    await this.pollService.votePoll(
+      this.pollId,
+      this.selectedOption,
+      this.voteAmount
+    );
   }
 }

@@ -1,64 +1,72 @@
-<div class="flex justify-center items-center h-screen text-2xl pollBody">
-  <div class="card w-2/4 bg-neutral text-neutral-content px-3">
-    <div class="card-body">
-      <div class="flex justify-center items-center p-3">
-        <h2 class="card-title text-3xl">{{ poll.title }}</h2>
-      </div>
-      <p>Description: {{ poll.description }}</p>
-      <div class="flex justify-around">
-        <p>Time remaining:</p>
-        <app-countdown [closingTime]="closingTime"></app-countdown>
-      </div>
-      <form>
-        <div
-          class="form-control flex-col gap-4"
-          *ngFor="let option of poll.options; let i = index"
-        >
-          <label class="label cursor-pointer justify-start">
+<div class="main-content pt-7">
+  <div
+    *ngIf="poll"
+    class="flex justify-center items-center h-screen text-2xl pollBody"
+  >
+    <div class="card w-2/4 bg-neutral text-neutral-content px-3">
+      <div class="card-body">
+        <div class="flex justify-center items-center p-3">
+          <h2 class="card-title text-3xl">{{ poll.title }}</h2>
+        </div>
+        <p>Description: {{ poll.description }}</p>
+        <div class="flex justify-around">
+          <p>Time remaining:</p>
+          <app-countdown [poll]="poll"></app-countdown>
+        </div>
+        <form>
+          <div
+            class="form-control flex-col gap-4"
+            *ngFor="let option of poll.options; let i = index"
+          >
+            <label class="label cursor-pointer justify-start">
+              <input
+                type="radio"
+                name="option"
+                class="radio radio-primary"
+                [value]="i"
+                [(ngModel)]="selectedOption"
+              />
+              <span class="text px-4">{{ option }}</span>
+            </label>
+            <progress
+              class="progress progress-primary w-full justify-self-end"
+              [value]="poll.votesPercent[i]"
+              max="100"
+            ></progress>
+          </div>
+          <div class="form-control pt-8">
             <input
-              type="radio"
-              name="option"
-              class="radio radio-primary"
-              [value]="i"
-              [(ngModel)]="selectedOption"
+              type="submit"
+              value="Vote"
+              class="btn btn-primary"
+              (click)="selectedOption ? openModal() : ''"
             />
-            <span class="text px-4">{{ option }}</span>
-          </label>
-          <progress
-            class="progress progress-primary w-full justify-self-end"
-            [value]="poll.votesPerOption[i]"
-            max="100"
-          ></progress>
-        </div>
-        <div class="form-control pt-8">
-          <input
-            type="submit"
-            value="Vote"
-            class="btn btn-primary"
-            (click)="openModal()"
-          />
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
-<dialog id="voteConfModal" class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box flex-col">
-    <h3 class="font-bold text-lg">Choose an amount to vote on this option</h3>
-    <p class="py-4">Your wallet will prompt you for the transaction</p>
-    <form method="dialog" class="flex justify-between">
-      <input
-        type="number"
-        placeholder="Choose amount"
-        class="input input-bordered input-primary w-full max-w-xs"
-        (keydown)="handleInvalidKeys($event)"
-        [(ngModel)]="voteAmount"
-        name="voteAmount"
-      />
-      <button class="btn btn-primary justify-items-end" (click)="handleVote()">
-        Confirm
-      </button>
-    </form>
-  </div>
-</dialog>
+  <dialog id="voteConfModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box flex-col">
+      <h3 class="font-bold text-lg">Choose an amount to vote on this option</h3>
+      <p class="py-4">Your wallet will prompt you for the transaction</p>
+      <form method="dialog" class="flex justify-between">
+        <input
+          type="number"
+          placeholder="Choose amount"
+          class="input input-bordered input-primary w-full max-w-xs"
+          (keydown)="handleInvalidKeys($event)"
+          [(ngModel)]="voteAmount"
+          name="voteAmount"
+        />
+        <button
+          class="btn btn-primary justify-items-end"
+          (click)="handleVote()"
+        >
+          Confirm
+        </button>
+      </form>
+    </div>
+  </dialog>
+</div>

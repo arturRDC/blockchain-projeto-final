@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { PollNum } from '../poll/poll';
+// type Poll = {
+//   title: string;
+//   description: string;
+//   options: string[];
+//   totalVotes: bigint;
+//   votesPerOption: bigint[];
+//   _closingTime: bigint;
+// };
 
 @Component({
   selector: 'app-countdown',
@@ -9,7 +18,11 @@ import { Component, Input } from '@angular/core';
   styleUrl: './countdown.component.css',
 })
 export class CountdownComponent {
-  @Input() closingTime: number = 0; // Unix timestamp
+  @Input() poll: PollNum | null = null; // Unix timestamp
+  // days: bigint = BigInt(0);
+  // hours: bigint = BigInt(0);
+  // minutes: bigint = BigInt(0);
+  // seconds: bigint = BigInt(0);
   days: number = 0;
   hours: number = 0;
   minutes: number = 0;
@@ -23,7 +36,8 @@ export class CountdownComponent {
 
   updateTime() {
     const now = Math.floor(Date.now() / 1000);
-    const diff = this.closingTime - now;
+    if (this.poll == null) return;
+    const diff = this.poll._closingTime - now;
 
     if (diff <= 0) {
       this.pollEnded = true;
@@ -33,6 +47,5 @@ export class CountdownComponent {
       this.minutes = Math.floor((diff % (60 * 60)) / 60);
       this.seconds = Math.floor(diff % 60);
     }
-    console.log(this.pollEnded);
   }
 }
