@@ -29,6 +29,9 @@ export class PollComponent implements OnInit {
   async ngOnInit() {
     this.pollId = this.route.snapshot.paramMap.get('id');
     if (this.pollId) {
+      this.pollService.getPollUpdates().subscribe((data) => {
+        this.poll = data;
+      });
       this.poll = await this.pollService.getPoll(this.pollId as string);
       console.log(this.poll);
       if (this.poll.totalVotes === 0) {

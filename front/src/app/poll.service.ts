@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { abi } from './abi';
+import { Observable, Subject } from 'rxjs';
 import Web3 from 'web3';
 
 type PollNum = {
@@ -30,6 +31,7 @@ export class PollService {
   private web3: any;
   private contract: any;
   private accounts: string[] = [];
+  private pollUpdates = new Subject<PollNum>();
   contractAddress = '0x682E5b57E0FB529E72098bD70De11d2D6Fe461f3';
 
   constructor() {
@@ -100,8 +102,16 @@ export class PollService {
     }
     let fromAddress = this.getAccount();
 
-    return await this.contract.methods
+    await this.contract.methods
       .votePoll(Number(pollId), option, amount)
       .send({ from: fromAddress });
+
+    // Fetch and emit the updated poll data
+    const updatedPoll = await this.getPoll(pollId);
+    this.pollUpdates.next(updatedPoll);
+  }
+
+  public getPollUpdates(): Observable<PollNum> {
+    return this.pollUpdates.asObservable();
   }
 }
