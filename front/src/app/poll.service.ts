@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ethers } from 'ethers';
+import { abi } from './abi';
 import Web3 from 'web3';
 
 type PollNum = {
@@ -8,6 +8,16 @@ type PollNum = {
   options: string[];
   totalVotes: number;
   votesPerOption: number[];
+  _closingTime: number;
+  votesPercent: number[];
+};
+
+type Poll = {
+  title: string;
+  description: string;
+  options: string[];
+  totalVotes: bigint;
+  votesPerOption: bigint[];
   _closingTime: bigint;
 };
 
@@ -20,257 +30,9 @@ export class PollService {
   private web3: any;
   private contract: any;
   private accounts: string[] = [];
-  contractAddress = '0x927E2AE538FAf928CC6cD57FE18dD4ED72C96545';
-  private abi = [
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: '_screenwriter',
-          type: 'address',
-        },
-      ],
-      name: 'addScreenwriter',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'string',
-          name: '_title',
-          type: 'string',
-        },
-        {
-          internalType: 'string',
-          name: '_description',
-          type: 'string',
-        },
-        {
-          internalType: 'string[]',
-          name: '_options',
-          type: 'string[]',
-        },
-        {
-          internalType: 'uint256',
-          name: '_duration',
-          type: 'uint256',
-        },
-      ],
-      name: 'createPoll',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: '_screenwriter',
-          type: 'address',
-        },
-      ],
-      name: 'removeScreenwriter',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: '_voteVerseToken',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'nonpayable',
-      type: 'constructor',
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: false,
-          internalType: 'address',
-          name: 'ownerPoll',
-          type: 'address',
-        },
-        {
-          indexed: false,
-          internalType: 'string',
-          name: 'title',
-          type: 'string',
-        },
-        {
-          indexed: false,
-          internalType: 'string',
-          name: 'description',
-          type: 'string',
-        },
-        {
-          indexed: false,
-          internalType: 'string[]',
-          name: 'options',
-          type: 'string[]',
-        },
-        {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'id',
-          type: 'uint256',
-        },
-        {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'closingTime',
-          type: 'uint256',
-        },
-      ],
-      name: 'CreatePoll',
-      type: 'event',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: '_id',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256',
-          name: '_option',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256',
-          name: '_tokenAmount',
-          type: 'uint256',
-        },
-      ],
-      name: 'votePoll',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: false,
-          internalType: 'address',
-          name: 'voter',
-          type: 'address',
-        },
-        {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'option',
-          type: 'uint256',
-        },
-        {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'totalVotes',
-          type: 'uint256',
-        },
-      ],
-      name: 'VotePoll',
-      type: 'event',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: '_id',
-          type: 'uint256',
-        },
-      ],
-      name: 'getPoll',
-      outputs: [
-        {
-          internalType: 'string',
-          name: 'title',
-          type: 'string',
-        },
-        {
-          internalType: 'string',
-          name: 'description',
-          type: 'string',
-        },
-        {
-          internalType: 'string[]',
-          name: 'options',
-          type: 'string[]',
-        },
-        {
-          internalType: 'uint256',
-          name: 'totalVotes',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256[]',
-          name: 'votesPerOption',
-          type: 'uint256[]',
-        },
-        {
-          internalType: 'uint256',
-          name: '_closingTime',
-          type: 'uint256',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-    {
-      inputs: [],
-      name: 'owner',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
-      ],
-      name: 'pollIDs',
-      outputs: [
-        {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-    {
-      inputs: [],
-      name: 'voteVerseToken',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-  ];
+  contractAddress = '0x682E5b57E0FB529E72098bD70De11d2D6Fe461f3';
 
   constructor() {
-    // this.web3 = new Web3((window as any).ethereum);
     this.initializeWeb3();
   }
 
@@ -281,13 +43,8 @@ export class PollService {
         method: 'eth_requestAccounts',
       });
       this.web3 = window.web3;
-      console.log('init accounts' + this.accounts[0]);
-      // this.accounts = await this.web3.eth.getAccounts();
 
-      this.contract = new this.web3.eth.Contract(
-        this.abi,
-        this.contractAddress
-      );
+      this.contract = new this.web3.eth.Contract(abi, this.contractAddress);
       console.log('initweb3 contract', this.contract);
     } else {
       console.error(
@@ -300,25 +57,38 @@ export class PollService {
     return this.accounts[0];
   }
 
+  convertPollToPollNum(poll: Poll): PollNum {
+    // Convert bigint fields to number
+    const totalVotes = Number(poll.totalVotes);
+    const votesPerOption = poll.votesPerOption.map(Number);
+    const _closingTime = Number(poll._closingTime);
+
+    // Calculate votesPercent
+    let votesPercent: number[];
+    if (totalVotes === 0) {
+      // If totalVotes is 0, set votesPercent to an array of zeros
+      votesPercent = votesPerOption.map(() => 0);
+    } else {
+      // Otherwise, calculate votesPercent as before
+      votesPercent = votesPerOption.map((vote) => (vote / totalVotes) * 100);
+    }
+
+    // Return new PollNum object
+    return {
+      ...poll,
+      totalVotes,
+      votesPerOption,
+      _closingTime,
+      votesPercent,
+    };
+  }
+
   async getPoll(pollId: string): Promise<PollNum> {
     if (!this.web3) {
-      this.initializeWeb3();
-      // this.contract = new this.web3.eth.Contract(
-      //   this.abi,
-      //   this.contractAddress
-      // );
+      await this.initializeWeb3();
     }
-    console.log('contract', this.contract);
-    const poll = await this.contract.methods.getPoll(pollId).call();
-    console.log(this.contract);
-    return {
-      title: poll[0],
-      description: poll[1],
-      options: poll[2],
-      totalVotes: Number(poll[3]),
-      votesPerOption: poll[4].map(Number),
-      _closingTime: BigInt(poll[5]),
-    };
+    const poll: Poll = await this.contract.methods.getPoll(pollId).call();
+    return this.convertPollToPollNum(poll);
   }
   async votePoll(
     pollId: string,
@@ -328,13 +98,10 @@ export class PollService {
     if (option == null) {
       option = 0;
     }
-    // let accounts = await this.web3.eth.getAccounts();
     let fromAddress = this.getAccount();
-    const gasPrice = await this.web3.eth.getGasPrice();
-    console.log('vote address ' + fromAddress);
-    console.log(gasPrice);
+
     return await this.contract.methods
-      .votePoll(BigInt(pollId), BigInt(option), BigInt(amount))
-      .send({ from: fromAddress, gas: gasPrice });
+      .votePoll(Number(pollId), option, amount)
+      .send({ from: fromAddress });
   }
 }
