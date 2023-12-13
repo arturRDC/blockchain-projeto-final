@@ -26,6 +26,7 @@ contract DappPoll {
 
     event CreatePoll(address ownerPoll, string title, string description, string[] options, uint id, uint closingTime);
     event VotePoll(address voter, uint option, uint totalVotes);
+    event ClosePoll(address ownerPoll, uint id, uint timesTamp);
 
     constructor(address _voteVerseToken) {
         owner = msg.sender;
@@ -132,6 +133,8 @@ contract DappPoll {
         
         _polls[_id].open = false;
         _transferTokenToWriter(_id);
+
+        emit ClosePoll(_polls[_id].owner, _id, block.timestamp);
     }
 
     function setMinimumDuration(uint _time) public onlyOwner {
