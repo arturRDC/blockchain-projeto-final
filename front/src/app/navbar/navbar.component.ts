@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { PollService } from '../poll.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,12 @@ import { Router } from '@angular/router';
   imports: [CommonModule],
 })
 export class NavbarComponent {
-  constructor(public router: Router) {}
+  constructor(public router: Router, public pollService: PollService) {}
 
-  isWriter: boolean = true;
+  isWriter: boolean = false;
+  async ngOnInit() {
+    this.pollService.isWriter().then((result) => {
+      this.isWriter = result;
+    });
+  }
 }

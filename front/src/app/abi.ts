@@ -15,6 +15,19 @@ export const abi = [
   {
     inputs: [
       {
+        internalType: 'uint256',
+        name: '_id',
+        type: 'uint256',
+      },
+    ],
+    name: 'closePoll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'string',
         name: '_title',
         type: 'string',
@@ -36,20 +49,26 @@ export const abi = [
       },
     ],
     name: 'createPoll',
-    outputs: [],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [
+    inputs: [],
+    name: 'redeemToken',
+    outputs: [
       {
-        internalType: 'address',
-        name: '_screenwriter',
-        type: 'address',
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
-    name: 'removeScreenwriter',
-    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -63,6 +82,31 @@ export const abi = [
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'ownerPoll',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'id',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'timestamp',
+        type: 'uint256',
+      },
+    ],
+    name: 'ClosePoll',
+    type: 'event',
   },
   {
     anonymous: false,
@@ -106,6 +150,32 @@ export const abi = [
     ],
     name: 'CreatePoll',
     type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_screenwriter',
+        type: 'address',
+      },
+    ],
+    name: 'removeScreenwriter',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_time',
+        type: 'uint256',
+      },
+    ],
+    name: 'setMinimumDuration',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [
@@ -156,6 +226,38 @@ export const abi = [
     type: 'event',
   },
   {
+    inputs: [],
+    name: 'amountTokenToRedeem',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'authorizedsScreenwriters',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'uint256',
@@ -193,6 +295,24 @@ export const abi = [
       {
         internalType: 'uint256',
         name: '_closingTime',
+        type: 'uint256',
+      },
+      {
+        internalType: 'bool',
+        name: 'open',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'minimumDuration',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
         type: 'uint256',
       },
     ],

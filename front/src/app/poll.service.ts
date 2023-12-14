@@ -124,10 +124,19 @@ export class PollService {
       .send({ from: fromAddress });
     const id: number = tx.events.CreatePoll.returnValues.id;
     return id;
-    console.log('pollid: ', tx.events.CreatePoll.returnValues.id);
   }
 
   public getPollUpdates(): Observable<PollNum> {
     return this.pollUpdates.asObservable();
+  }
+
+  public async isWriter(): Promise<boolean> {
+    if (!this.web3) {
+      await this.initializeWeb3();
+    }
+    const isWriter: boolean = await this.contract.methods
+      .authorizedsScreenwriters(this.getAccount())
+      .call();
+    return isWriter;
   }
 }
