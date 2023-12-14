@@ -21,9 +21,8 @@ contract DappPoll {
     uint public minimumDuration;
     uint public _amountTokenToRedeem;
     uint[] public pollIDs;
+    mapping (address => bool) public authorizedsScreenwriters;
     mapping (uint => Poll) private _polls;
-    mapping (address => bool) private _authorizedsScreenwriters;
-    address public voteVerseToken;
 
     event CreatePoll(address ownerPoll, string title, string description, string[] options, uint id, uint closingTime);
     event VotePoll(address voter, uint option, uint totalVotes);
@@ -43,7 +42,7 @@ contract DappPoll {
     }
 
     modifier onlyScreenwriter() {
-        require(_authorizedsScreenwriters[msg.sender], "Not authorized to manage polls.");
+        require(authorizedsScreenwriters[msg.sender], "Not authorized to manage polls.");
         _;
     }
 
@@ -66,11 +65,11 @@ contract DappPoll {
     }
 
     function addScreenwriter(address _screenwriter) public onlyOwner {
-        _authorizedsScreenwriters[_screenwriter] = true;
+        authorizedsScreenwriters[_screenwriter] = true;
     }
 
     function removeScreenwriter(address _screenwriter) public onlyOwner {
-        _authorizedsScreenwriters[_screenwriter] = false;
+        authorizedsScreenwriters[_screenwriter] = false;
     }
 
     function createPoll(string memory _title, string memory _description, string[] memory _options, uint _duration) public onlyScreenwriter {
