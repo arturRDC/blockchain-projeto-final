@@ -19,7 +19,7 @@ contract DappPoll {
     address public owner;
     address public voteVerseToken;
     uint public minimumDuration;
-    uint public _amountTokenToRedeem;
+    uint private _amountTokenToRedeem;
     uint[] public pollIDs;
     mapping (address => bool) public authorizedsScreenwriters;
     mapping (uint => Poll) private _polls;
@@ -149,6 +149,10 @@ contract DappPoll {
         _amountTokenToRedeem = 0;
 
         return aux;
+    }
+
+    function amountTokenToRedeem() public view onlyOwner returns (uint) {
+        return _amountTokenToRedeem;
     }
 
     function _transferTokenToWriter(uint _id) private {
