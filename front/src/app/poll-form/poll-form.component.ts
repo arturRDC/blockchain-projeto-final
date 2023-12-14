@@ -6,6 +6,7 @@ import {
   FormGroup,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { PollService } from '../poll.service';
 
 @Component({
   selector: 'app-poll-form',
@@ -17,14 +18,14 @@ import {
 export class PollFormComponent {
   pollForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private pollService: PollService) {
     this.pollForm = this.fb.group({
       title: '',
       description: '',
-      days: '',
-      hours: '',
-      minutes: '',
-      seconds: '',
+      days: 0,
+      hours: 6,
+      minutes: 0,
+      seconds: 0,
       options: this.fb.array(['', '']),
     });
   }
@@ -37,9 +38,23 @@ export class PollFormComponent {
     this.options.push(this.fb.control(''));
   }
 
-  onSubmit() {
+  calcDuration(): number {
+    let daysUT = this.pollForm.get('days')?.value * (60 * 60 * 24);
+    let hoursUT = this.pollForm.get('hours')?.value * 60 * 60;
+    let minutesUT = this.pollForm.get('hours')?.value * 60;
+    let secondsUT = this.pollForm.get('hours')?.value;
+    return daysUT + hoursUT + minutesUT + secondsUT;
+  }
+
+  async onSubmit() {
     console.log(this.pollForm.value);
-    // Call blockchain
+    let duration: number = this.calcDuration();
+    this.pollService.createPoll(
+      this.pollForm.get('title')?.value,
+      this.pollForm.get('description')?.value,
+      this.pollForm.get('options')?.value,
+      duration
+    );
   }
 
   handleInvalidKeys(event: KeyboardEvent) {

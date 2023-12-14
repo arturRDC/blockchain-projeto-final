@@ -111,6 +111,19 @@ export class PollService {
     this.pollUpdates.next(updatedPoll);
   }
 
+  async createPoll(
+    title: string,
+    description: string,
+    options: number[] | null,
+    duration: number
+  ): Promise<any> {
+    let fromAddress = this.getAccount();
+
+    await this.contract.methods
+      .createPoll(title, description, options, duration)
+      .send({ from: fromAddress });
+  }
+
   public getPollUpdates(): Observable<PollNum> {
     return this.pollUpdates.asObservable();
   }
