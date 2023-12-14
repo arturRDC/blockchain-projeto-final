@@ -32,7 +32,7 @@ export class PollService {
   private contract: any;
   private accounts: string[] = [];
   private pollUpdates = new Subject<PollNum>();
-  contractAddress = '0x682E5b57E0FB529E72098bD70De11d2D6Fe461f3';
+  contractAddress = '0x7cA1606309696ebeC37cA410cBB21b69017b616b';
 
   constructor() {
     this.initializeWeb3();
@@ -116,12 +116,15 @@ export class PollService {
     description: string,
     options: number[] | null,
     duration: number
-  ): Promise<any> {
+  ): Promise<number> {
     let fromAddress = this.getAccount();
 
-    await this.contract.methods
+    const tx = await this.contract.methods
       .createPoll(title, description, options, duration)
       .send({ from: fromAddress });
+    const id: number = tx.events.CreatePoll.returnValues.id;
+    return id;
+    console.log('pollid: ', tx.events.CreatePoll.returnValues.id);
   }
 
   public getPollUpdates(): Observable<PollNum> {

@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { PollService } from '../poll.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-poll-form',
@@ -18,7 +19,11 @@ import { PollService } from '../poll.service';
 export class PollFormComponent {
   pollForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private pollService: PollService) {
+  constructor(
+    private fb: FormBuilder,
+    private pollService: PollService,
+    private router: Router
+  ) {
     this.pollForm = this.fb.group({
       title: '',
       description: '',
@@ -49,12 +54,18 @@ export class PollFormComponent {
   async onSubmit() {
     console.log(this.pollForm.value);
     let duration: number = this.calcDuration();
-    this.pollService.createPoll(
-      this.pollForm.get('title')?.value,
-      this.pollForm.get('description')?.value,
-      this.pollForm.get('options')?.value,
-      duration
-    );
+    let id: number;
+    this.pollService
+      .createPoll(
+        this.pollForm.get('title')?.value,
+        this.pollForm.get('description')?.value,
+        this.pollForm.get('options')?.value,
+        duration
+      )
+      .then((result) => {
+        id = result;
+        this.router.navigateByUrl('/poll/' + id);
+      });
   }
 
   handleInvalidKeys(event: KeyboardEvent) {
