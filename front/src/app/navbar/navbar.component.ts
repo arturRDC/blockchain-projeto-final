@@ -14,9 +14,16 @@ export class NavbarComponent {
   constructor(public router: Router, public pollService: PollService) {}
 
   isWriter: boolean = false;
+  canAddWriter: boolean = false;
+
   async ngOnInit() {
     this.pollService.isWriter().then((result) => {
       this.isWriter = result;
+    });
+
+    this.pollService.canAddWriter().then((result) => {
+      this.canAddWriter = result;
+      console.log(this.canAddWriter);
     });
   }
 }

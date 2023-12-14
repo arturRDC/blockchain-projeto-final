@@ -1,0 +1,27 @@
+<div class="flex justify-center items-center h-screen text-2xl">
+  <div class="card w-1/2 bg-neutral text-neutral-content">
+    <div class="card-body">
+      <div class="flex justify-center items-center p-3 mb-4">
+        <h2 class="card-title text-3xl">Add Screenwriter</h2>
+      </div>
+      <form>
+        <div class="form-control flex-row justify-around gap-8">
+          <input
+            type="text"
+            placeholder="Address"
+            class="input input-bordered input-primary w-2/3"
+            [(ngModel)]="writerAddress"
+            name="writerAddress"
+          />
+          <button
+            class="btn btn-primary w-1/3"
+            type="button"
+            (click)="addWriter()"
+          >
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

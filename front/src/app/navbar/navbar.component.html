@@ -33,6 +33,9 @@
       <li *ngIf="isWriter" (click)="router.navigate(['poll/create'])">
         <a>Create Poll</a>
       </li>
+      <li *ngIf="canAddWriter" (click)="router.navigate(['add-writer'])">
+        <a>Add Writer</a>
+      </li>
     </ul>
   </div>
 </div>

@@ -45,6 +45,10 @@ export class PollService {
         method: 'eth_requestAccounts',
       });
       this.web3 = window.web3;
+      // convert to checksum so it's uppercase
+      this.accounts = this.accounts.map((address) =>
+        this.web3.utils.toChecksumAddress(address)
+      );
 
       this.contract = new this.web3.eth.Contract(abi, this.contractAddress);
       console.log('initweb3 contract', this.contract);
@@ -138,5 +142,25 @@ export class PollService {
       .authorizedsScreenwriters(this.getAccount())
       .call();
     return isWriter;
+  }
+
+  public async canAddWriter(): Promise<boolean> {
+    if (!this.web3) {
+      await this.initializeWeb3();
+    }
+
+    const owner: string = await this.contract.methods.owner().call();
+    return owner === this.getAccount();
+  }
+
+  async addWriter(_screenwriter: string) {
+    if (_screenwriter == null) {
+      return;
+    }
+    let fromAddress = this.getAccount();
+
+    await this.contract.methods
+      .addScreenwriter(_screenwriter)
+      .send({ from: fromAddress });
   }
 }
