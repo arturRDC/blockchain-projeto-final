@@ -13,6 +13,7 @@
             type="text"
             class="input input-bordered input-primary w-full"
             id="title"
+            formControlName="title"
           />
         </div>
 
@@ -23,43 +24,51 @@
           <textarea
             class="textarea textarea-primary w-full"
             id="description"
+            formControlName="description"
           ></textarea>
         </div>
 
-        <label class="block text-md font-bold mb-2" for="duration">
-          Duration
-        </label>
-        <div class="mb-4 md:flex md:items-center">
-          <div class="md:w-1/3 pr-4">Days</div>
-          <div class="md:w-2/3">
+        <label class="block text-md font-bold mb-2"> Duration </label>
+        <div class="mb-4 flex justify-between items-center duration">
+          <div class="pr-4">Days</div>
+          <div class="">
             <input
               type="number"
-              class="input input-bordered input-primary w-16 inline-block"
+              min="0"
+              class="input input-bordered input-primary w-16"
               id="days"
+              (keydown)="handleInvalidKeys($event)"
+              formControlName="days"
             />
           </div>
-          <div class="md:w-1/3 pr-4">Hours</div>
-          <div class="md:w-2/3">
+          <div class="px-4">Hours</div>
+          <div class="">
             <input
               type="number"
-              class="input input-bordered input-primary w-16 inline-block"
+              class="input input-bordered input-primary w-16"
               id="hours"
+              (keydown)="handleInvalidKeys($event)"
+              formControlName="hours"
             />
           </div>
-          <div class="md:w-1/3 pr-4">Minutes</div>
-          <div class="md:w-2/3">
+          <div class="px-4">Minutes</div>
+          <div class="">
             <input
               type="number"
-              class="input input-bordered input-primary w-16 inline-block"
+              class="input input-bordered input-primary w-16"
               id="minutes"
+              (keydown)="handleInvalidKeys($event)"
+              formControlName="minutes"
             />
           </div>
-          <div class="md:w-1/3 pr-4">Seconds</div>
-          <div class="md:w-2/3">
+          <div class="px-4">Seconds</div>
+          <div class="">
             <input
               type="number"
-              class="input input-bordered input-primary w-16 inline-block"
+              class="input input-bordered input-primary w-16"
               id="seconds"
+              (keydown)="handleInvalidKeys($event)"
+              formControlName="seconds"
             />
           </div>
         </div>
@@ -67,7 +76,7 @@
         <div formArrayName="options">
           <div *ngFor="let option of options.controls; index as i" class="pb-4">
             <label class="block text-md font-bold pb-2" for="option{{ i }}">
-              Option {{ i + 1 }}:
+              Option {{ i + 1 }}
             </label>
             <input
               type="text"
@@ -78,7 +87,7 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between pt-4">
           <button class="btn" type="button" (click)="addOption()">
             Add Option
           </button>

@@ -65,6 +65,7 @@
         placeholder="Choose amount"
         class="input input-bordered input-primary w-full max-w-xs"
         (keydown)="handleInvalidKeys($event)"
+        min="1"
         [(ngModel)]="voteAmount"
         name="voteAmount"
       />

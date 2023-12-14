@@ -21,8 +21,11 @@ export class PollFormComponent {
     this.pollForm = this.fb.group({
       title: '',
       description: '',
-      duration: '',
-      options: this.fb.array(['']),
+      days: '',
+      hours: '',
+      minutes: '',
+      seconds: '',
+      options: this.fb.array(['', '']),
     });
   }
 
@@ -37,5 +40,13 @@ export class PollFormComponent {
   onSubmit() {
     console.log(this.pollForm.value);
     // Call blockchain
+  }
+
+  handleInvalidKeys(event: KeyboardEvent) {
+    return ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(
+      event.code
+    )
+      ? true
+      : !isNaN(Number(event.key)) && event.code !== 'Space';
   }
 }
