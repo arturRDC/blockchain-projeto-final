@@ -1,14 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { PollNum } from '../poll/poll';
-// type Poll = {
-//   title: string;
-//   description: string;
-//   options: string[];
-//   totalVotes: bigint;
-//   votesPerOption: bigint[];
-//   _closingTime: bigint;
-// };
 
 @Component({
   selector: 'app-countdown',
@@ -19,10 +11,6 @@ import { PollNum } from '../poll/poll';
 })
 export class CountdownComponent {
   @Input() poll: PollNum | null = null; // Unix timestamp
-  // days: bigint = BigInt(0);
-  // hours: bigint = BigInt(0);
-  // minutes: bigint = BigInt(0);
-  // seconds: bigint = BigInt(0);
   days: number = 0;
   hours: number = 0;
   minutes: number = 0;
@@ -32,6 +20,7 @@ export class CountdownComponent {
   ngOnInit() {
     this.updateTime();
     setInterval(() => this.updateTime(), 1000);
+    console.log(this.poll?._closingTime);
   }
 
   updateTime() {
