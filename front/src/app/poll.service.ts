@@ -32,7 +32,7 @@ export class PollService {
   private contract: any;
   private accounts: string[] = [];
   private pollUpdates = new Subject<PollNum>();
-  contractAddress = '0x7cA1606309696ebeC37cA410cBB21b69017b616b';
+  contractAddress = '0x7531DA280C5628c1b7488370202b1e8aa37BfA3E';
 
   constructor() {
     this.initializeWeb3();
